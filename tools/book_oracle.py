@@ -44,15 +44,13 @@ def replay(events: list[dict]) -> list[str]:
         st = feeds.setdefault(e["feed"], {"session": None, "expected": 0, "B": {}, "A": {}})
         kind = "U"
         if st["session"] is None:
-            st["session"], st["expected"] = e["session"], e["seq"]
+            st["session"] = e["session"]
         elif e["session"] > st["session"]:
             st["B"].clear()
             st["A"].clear()
-            st["session"], st["expected"], kind = e["session"], e["seq"], "B"
-        else:
-            if e["seq"] != st["expected"]:
-                raise SystemExit(f"protocol violation: feed {e['feed']} session {e['session']} expected seq {st['expected']} got {e['seq']}")
-            st["expected"] += 1
+            st["session"], kind = e["session"], "B"
+        elif e["seq"] != st["expected"]:
+            raise SystemExit(f"protocol violation: feed {e['feed']} session {e['session']} expected seq {st['expected']} got {e['seq']}")
         if e["side"] == "R":
             st["B"].clear()
             st["A"].clear()
@@ -64,6 +62,7 @@ def replay(events: list[dict]) -> list[str]:
                 book.pop(e["price"], None)
             else:
                 book[e["price"]] = e["qty"]
+        st["expected"] = e["seq"] + 1
         bids = ",".join(f"{p}:{q}" for p, q in sorted(st["B"].items(), reverse=True)) or "-"
         asks = ",".join(f"{p}:{q}" for p, q in sorted(st["A"].items())) or "-"
         bb = next(iter(sorted(st["B"], reverse=True)), -1)
