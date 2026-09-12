@@ -1,0 +1,45 @@
+# Proposed workflow: not executed in the authoring environment.
+name: correctness
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  cpp:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler: [g++, clang++]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4, inspected CI revision
+      - run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=${{ matrix.compiler }}
+      - run: cmake --build build -j2
+      - run: ctest --test-dir build --output-on-failure
+      - run: python3 tools/crosscheck.py --allow-cpp-only
+  sanitizers:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        option: [QSL_SANITIZE, QSL_TSAN]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - run: cmake -S . -B build-check -DCMAKE_BUILD_TYPE=Debug -D${{ matrix.option }}=ON
+      - run: cmake --build build-check -j2
+      - run: ctest --test-dir build-check --output-on-failure
+  rust-and-conformance:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        toolchain: ['1.74.0', stable]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - run: rustup toolchain install ${{ matrix.toolchain }} --profile minimal
+      - run: cargo +${{ matrix.toolchain }} test --manifest-path rust/Cargo.toml
+      - run: cargo +${{ matrix.toolchain }} build --release --manifest-path rust/Cargo.toml
+      - run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build -j2
+      - run: python3 tools/crosscheck.py
