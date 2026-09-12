@@ -1,0 +1,9 @@
+{
+  "cpp": "PASS",
+  "rust": "UNEXECUTED_MISSING_BINARY",
+  "cross_language": "UNEXECUTED",
+  "valid_fixtures": 18,
+  "rejected_fixtures": 7,
+  "successful_invocations": 72,
+  "overall": "CPP_ONLY_PARTIAL"
+}

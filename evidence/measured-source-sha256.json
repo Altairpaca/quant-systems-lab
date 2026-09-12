@@ -1,0 +1,13 @@
+{
+  "scope": "Source used for the recorded C++ smoke benchmark; kernel and runner files did not change after measurement.",
+  "sha256": {
+    "CMakeLists.txt": "8c5c90b40fdccbceb1cdada2363e207443a266408fc7c8508a53189a2210641a",
+    "cpp/include/replay.hpp": "ce61245ad67cd8818c049d7511ca8fdb1d0d9eca17250b0bd9d1786590a1083e",
+    "cpp/include/bounded_queue.hpp": "c9d4b281994da3aad1f73eab9b800dda89d408c11675fd2e341af9429fa2eb49",
+    "cpp/src/main.cpp": "aa702b4501d622bbb9274d6086070c0f36b017968bf0197ef91c4bbdff2ca8e4",
+    "tools/generate.py": "c2afa6759bcc0a577c4dd1460c9c20b6723e0d2a72f03583d9bbb4e647611c17",
+    "tools/run_bench.py": "afbccdaddb13ae6fa090c91bf3b4151f5bb6b5defff9109ae37a08d7fb9d2c0b"
+  },
+  "rust_execution": "UNEXECUTED",
+  "github_workflow_execution": "UNEXECUTED_TEMPLATE"
+}
