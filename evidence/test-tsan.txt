@@ -1,5 +1,5 @@
-Internal ctest changing into directory: /mnt/data/github-quant-audit/quant-systems-lab/build-tsan
-Test project /mnt/data/github-quant-audit/quant-systems-lab/build-tsan
+Internal ctest changing into directory: <authoring-checkout>/build-tsan
+Test project <authoring-checkout>/build-tsan
     Start 1: replay_and_queue
 1/1 Test #1: replay_and_queue .................   Passed    4.18 sec
 

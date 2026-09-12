@@ -16,6 +16,9 @@ configuration (16 configurations × 4 methods × 30 = 1,920 timed observations p
 
 ## Provenance notes
 
+- Committed copies normalize absolute operator paths (`<repo>`, `<run-dir>`, `python3`); the
+  unmodified originals remain in the private handoff package. Values, hashes and timestamps are
+  unchanged (see `../README.md` for the substitution table and verification statement).
 - All three runs measured the same C++ binary,
   `sha256 a7eed7bcdc8efbbeb4703289af6ed1e543e4bf5919b89a776dad8ce9ae4cfb28`, built from the
   runner/CLI commit series whose dirty paths are recorded in each `run-metadata.json`

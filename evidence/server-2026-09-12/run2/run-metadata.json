@@ -11,7 +11,7 @@
     " M tools/run_bench.py",
     "?? tools/test_bench_cli.py"
   ],
-  "binary": "/home/altair/projects/finance/active/quant-systems-lab/build/qsl",
+  "binary": "<repo>/build/qsl",
   "binary_sha256": "a7eed7bcdc8efbbeb4703289af6ed1e543e4bf5919b89a776dad8ce9ae4cfb28",
   "rust_binary": null,
   "rust_binary_sha256": null,
@@ -127,5 +127,5 @@
     "schedutil"
   ],
   "cxx": "c++ (Ubuntu 15.2.0-16ubuntu1) 15.2.0",
-  "command": "tools/run_bench.py --reps 30 --output-dir /home/altair/projects/_workspace/evidence/qsl/20260912-bench/run2"
+  "command": "tools/run_bench.py --reps 30 --output-dir <run-dir>"
 }
