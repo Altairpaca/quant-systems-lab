@@ -14,13 +14,38 @@ Each method gets two warm-ups and nine timed repetitions. Method order is determ
 python3 tools/run_bench.py --patterns uniform ties bursty skew --feeds 1 4 16 64 --total 65536
 ```
 
-Run from a known clean checkout. The script currently overwrites the top-level `evidence/` smoke results; preserve the supplied evidence before rerunning or use an isolated worktree. A server follow-up should add an explicit run directory and binary/build metadata arguments rather than overwrite history. The large fixtures are deleted after hashing; regenerate with the exact pattern/feed/seed/per-feed count and verify the stored SHA-256.
+Run from a known clean checkout. `tools/run_bench.py` now writes every invocation into its own
+`evidence/runs/<run-id>/` directory (explicit `--output-dir` supported) and records the source
+revision and dirty paths, the executable SHA-256, compiler, CPU model, affinity, NUMA nodes and
+scaling governor, the fixture SHA-256 plus the exact generation command, and the exact bench
+command with `--reps`/`--warmups`. Existing evidence is never overwritten: an existing output
+directory is a hard error. The runner rejects `--total 0`, out-of-range `--reps`/`--warmups`,
+unknown patterns and missing binaries before measuring, and treats a missing or non-numeric
+`elapsed_ns`, an unknown method or an event count that disagrees with the fixture as an error
+rather than a zero. `qsl bench` itself validates its options (`--reps`, `--warmups`) and exits
+non-zero on unknown flags (`tools/test_bench_cli.py`, wired into `ctest`).
 
 Raw elapsed nanoseconds are batch elapsed times. Dividing by N estimates batch service cost per event. Percentiles of these batch samples are **not p99 event latency**. Nine runs are a smoke sample, not a narrow confidence interval. Preserve all observations, including slow outliers and cases where the proposed optimization loses.
 
-## 3. Controlled server extension
+## 3. Controlled server extension (executed 2026-09-12)
 
-Record the source revision and dirty state, compiler and standard library, optimization flags, executable hash, kernel, CPU model/topology, NUMA placement, RAM, virtualization, process/thread affinity, governor/turbo state if observable without elevated changes, background load, input hashes, warm-up policy and repetition seed. Do not change system-wide governors, reserve huge pages, install drivers, reboot or run privileged tuning without explicit approval.
+Executed on the operator's Linux server: three independent process invocations of
+`tools/run_bench.py --reps 30`, each covering 4 patterns × 4 feed counts × 4 methods × 30
+interleaved repetitions (1,920 timed observations per run), with source revision, binary hash,
+CPU model, affinity, governor, NUMA topology and fixture hashes captured per run. Summaries,
+metadata and a cross-run comparison are committed under `evidence/server-2026-09-12/`; the
+per-repetition raw CSVs remain in the operator's local evidence store and regenerate from the
+recorded hashes and commands.
+
+Outcome: no structure wins everywhere. At K=1 the head scan is fastest (8.94 ns/event vs 25.94
+for root replacement); as K grows the scan degrades to 321.15 ns/event at K=64 while root
+replacement stays between 18 and 36. Cross-run spread reaches 47% on small-K configurations
+(single-digit nanosecond absolute values) and 43% for `scan` at K=64, so only large factor
+differences are actionable on this shared, unpinned host; no CPU pinning, frequency isolation
+or NUMA placement was applied. Still unmeasured: Rust timing, queue latency, RSS/allocation,
+and any real-market data — none of these is claimed.
+
+Record the source revision and dirty state, compiler and standard library, optimization flags, executable hash, kernel, CPU model/topology, NUMA placement, RAM, virtualization, process/thread affinity, governor/turbo state if observable without elevated changes, background load, input hashes, warm-up policy and repetition seed. Do not change system-wide governors, reserve huge pages, install drivers, reboot or run privileged tuning without explicit approval. **Status: the runner now captures revision/tree/dirty paths, binary hash, compiler, CPU model, affinity, NUMA nodes, scaling governor, input hashes and commands; RAM/virtualization and background load are not yet captured.**
 
 Use at least 30 interleaved samples for a chosen stable workload and multiple independent process launches. Report raw samples, medians and dispersion; estimate uncertainty at the independent run level rather than pretending every event is independent. Compare GCC and Clang and the actual supported Rust toolchains. Keep total N fixed for a separate scaling experiment; vary K, skew, ties, record width and input size across cache/RAM boundaries deliberately.
 

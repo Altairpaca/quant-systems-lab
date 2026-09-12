@@ -9,4 +9,4 @@
 -- Found Threads: TRUE
 -- Configuring done (0.5s)
 -- Generating done (0.0s)
--- Build files have been written to: /mnt/data/github-quant-audit/quant-systems-lab/build-clang
+-- Build files have been written to: <authoring-checkout>/build-clang
