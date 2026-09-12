@@ -1,0 +1,17 @@
+{
+  "platform": "Linux",
+  "machine": "x86_64",
+  "python": "3.13.5",
+  "compiler": "c++ (Debian 14.2.0-19) 14.2.0",
+  "flags": "CMake Release, -O3 -DNDEBUG on this GNU build; no -march=native",
+  "warmups": 2,
+  "repetitions": 9,
+  "timed": "merge plus output allocation; excludes fixture load, validation, output comparison/destruction",
+  "limits": [
+    "shared virtualized container",
+    "no CPU pinning",
+    "no thermal/frequency isolation",
+    "not exchange or network latency"
+  ],
+  "cpu_model": "AMD EPYC 9V74 80-Core Processor"
+}

@@ -1,0 +1,5 @@
+{
+  "configurations": 16,
+  "timed_samples": 576,
+  "status": "full-vector comparisons passed"
+}

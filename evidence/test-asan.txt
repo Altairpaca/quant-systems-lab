@@ -1,0 +1,8 @@
+Internal ctest changing into directory: /mnt/data/github-quant-audit/quant-systems-lab/build-asan
+Test project /mnt/data/github-quant-audit/quant-systems-lab/build-asan
+    Start 1: replay_and_queue
+1/1 Test #1: replay_and_queue .................   Passed    2.54 sec
+
+100% tests passed, 0 tests failed out of 1
+
+Total Test time (real) =   2.54 sec

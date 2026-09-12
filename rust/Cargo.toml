@@ -1,0 +1,14 @@
+[package]
+name = "quant-systems-lab"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.74"
+publish = false
+
+[lib]
+name = "quant_systems_lab"
+path = "src/lib.rs"
+
+[[bin]]
+name = "qsl-rust"
+path = "src/main.rs"
