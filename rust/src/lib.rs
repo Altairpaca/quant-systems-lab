@@ -1,6 +1,8 @@
-//! Availability-time ordered replay. Synthetic/academic component, not an OMS.
+//! Availability-time ordered replay and book-state consumer. Synthetic/academic component, not an OMS.
 use std::cmp::Reverse;
 use std::collections::BinaryHeap;
+
+pub mod book;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Event {

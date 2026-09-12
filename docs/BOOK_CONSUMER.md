@@ -13,12 +13,14 @@ A deterministic mapper from an availability-ordered, per-feed L2 price-level upd
 observable book state: best bid/offer (BBO) and every price level's quantity after each applied
 event. It is not an order book matcher, not an OMS, and it does not do risk or execution. It
 applies the same availability-ordering contract as the replay component (`Replay` in
-`rust/src/lib.rs`): the identical `(available_ns, feed_id, seq)` order policy over the same
-canonical fixture family. The book layer carries `u64` quantities beyond the replay event's
-`i64` projection, so its own merge is implemented locally in `rust/src/book.rs`.
+`rust/src/lib.rs`) — non-decreasing `available_ns` per feed — over the same canonical fixture
+family; because a session restart re-baselines `seq`, the book layer orders by
+`(available_ns, feed_id, session, seq)` where the replay component orders by
+`(available_ns, feed_id, seq)`. The book layer also carries `u64` quantities beyond the replay
+event's `i64` projection, so its own merge is implemented locally in `rust/src/book.rs`.
 
 The venue timestamp (`venue_ns`) is payload only. Ordering never uses it; the information
-available to the consumer at event time is exactly `(available_ns, feed_id, seq)`.
+available to the consumer at event time is exactly `(available_ns, feed_id, session, seq)`.
 
 ## 2. Input: book fixture format
 

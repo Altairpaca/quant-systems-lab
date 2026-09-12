@@ -1,10 +1,14 @@
+use quant_systems_lab::book;
 use quant_systems_lab::{Event, Replay};
 use std::error::Error;
 use std::io::{self, Write};
 fn main() -> Result<(), Box<dyn Error>> {
     let args: Vec<String> = std::env::args().collect();
-    if args.len() < 3 { return Err("usage: qsl-rust dump FIXTURE [sort|scan|heap|heap-replace]".into()); }
-    if args[1] != "dump" { return Err("only dump is implemented; no Rust timing claim".into()); }
+    if args.get(1).map(String::as_str) == Some("book") {
+        return book_command(&args);
+    }
+    if args.len() < 3 { return Err("usage: qsl-rust dump FIXTURE [sort|scan|heap|heap-replace] | qsl-rust book FIXTURE".into()); }
+    if args[1] != "dump" { return Err("unknown subcommand; expected dump or book".into()); }
     let mut feeds: Vec<Vec<Event>> = Vec::new();
     for (line_no,line) in std::fs::read_to_string(&args[2])?.lines().enumerate() {
         if line.is_empty() || line.starts_with('#') { continue; }
@@ -28,4 +32,37 @@ fn main() -> Result<(), Box<dyn Error>> {
     let stdout = io::stdout(); let mut writer = io::BufWriter::new(stdout.lock());
     for e in out { writeln!(writer,"{}\t{}\t{}\t{}\t{}\t{}",e.available_ns,e.feed,e.seq,e.venue_ns,e.price_ticks,e.qty)?; }
     writer.flush()?; Ok(())
+}
+
+fn book_command(args: &[String]) -> Result<(), Box<dyn Error>> {
+    if args.len() != 3 {
+        eprintln!("usage: qsl-rust book FIXTURE");
+        std::process::exit(2);
+    }
+    let text = match std::fs::read_to_string(&args[2]) {
+        Ok(text) => text,
+        Err(error) => {
+            eprintln!("usage error: cannot read {}: {error}", args[2]);
+            std::process::exit(2);
+        }
+    };
+    let mut events = match book::parse_fixture(&text) {
+        Ok(events) => events,
+        Err(error) => {
+            eprintln!("{error}");
+            std::process::exit(i32::from(error.exit_code()));
+        }
+    };
+    let lines = match book::replay(&mut events) {
+        Ok(lines) => lines,
+        Err(error) => {
+            eprintln!("{error}");
+            std::process::exit(i32::from(error.exit_code()));
+        }
+    };
+    let stdout = io::stdout();
+    let mut writer = io::BufWriter::new(stdout.lock());
+    for line in lines { writeln!(writer, "{line}")?; }
+    writer.flush()?;
+    Ok(())
 }

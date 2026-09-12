@@ -40,7 +40,7 @@ def parse(path: Path) -> list[dict]:
 def replay(events: list[dict]) -> list[str]:
     feeds: dict[int, dict] = {}
     lines: list[str] = []
-    for index, e in enumerate(sorted(events, key=lambda x: (x["available_ns"], x["feed"], x["seq"]))):
+    for index, e in enumerate(sorted(events, key=lambda x: (x["available_ns"], x["feed"], x["session"], x["seq"]))):
         st = feeds.setdefault(e["feed"], {"session": None, "expected": 0, "B": {}, "A": {}})
         kind = "U"
         if st["session"] is None:
