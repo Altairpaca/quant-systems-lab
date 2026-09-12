@@ -101,11 +101,28 @@ int main(int argc, char** argv) {
         };
         if (std::string(argv[1]) == "dump") { print(run(argc > 3 ? argv[3] : "heap")); return 0; }
         if (std::string(argv[1]) != "bench") throw std::invalid_argument("unknown mode");
+        int reps = 9, warmups = 2;
+        for (int arg = 3; arg < argc; ++arg) {
+            std::string option = argv[arg];
+            auto count = [&](const char* name) {
+                if (arg + 1 >= argc) throw std::invalid_argument(std::string("missing value for ") + name);
+                std::string text = argv[++arg];
+                long value = 0; std::size_t used = 0;
+                try { value = std::stol(text, &used); }
+                catch (const std::exception&) { throw std::invalid_argument(std::string("invalid value for ") + name + ": " + text); }
+                if (used != text.size() || value < (std::string(name) == "--warmups" ? 0 : 1) || value > 1000000)
+                    throw std::invalid_argument(std::string("invalid value for ") + name + ": " + text);
+                return static_cast<int>(value);
+            };
+            if (option == "--reps") reps = count("--reps");
+            else if (option == "--warmups") warmups = count("--warmups");
+            else throw std::invalid_argument("unknown bench option: " + option);
+        }
         auto expected = r.reference(); require(r.size() > 0, "benchmark fixture must be nonempty");
-        for (int warm = 0; warm < 2; ++warm) for (auto& method : methods) require(run(method) == expected, "warm-up mismatch");
+        for (int warm = 0; warm < warmups; ++warm) for (auto& method : methods) require(run(method) == expected, "warm-up mismatch");
         std::mt19937 rng(20260912);
         std::cout << "repetition,method,events,elapsed_ns\n";
-        for (int rep = 0; rep < 9; ++rep) {
+        for (int rep = 0; rep < reps; ++rep) {
             std::shuffle(methods.begin(), methods.end(), rng);
             for (auto& method : methods) {
                 auto start = std::chrono::steady_clock::now(); auto out = run(method);
