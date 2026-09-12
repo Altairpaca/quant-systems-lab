@@ -43,3 +43,4 @@ jobs:
       - run: cargo +${{ matrix.toolchain }} build --release --manifest-path rust/Cargo.toml
       - run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build -j2
       - run: python3 tools/crosscheck.py
+      - run: python3 tools/crosscheck_book.py
